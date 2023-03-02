@@ -1,0 +1,1 @@
+This is a project by Team 60 for CS 222 which in a very basic description is a twitter bot.
