@@ -8,6 +8,7 @@ tweepy = "*"
 numpy = "*"
 torch = "*"
 transformers = "*"
+nltk = "*"
 
 [dev-packages]
 pytest = "*"
