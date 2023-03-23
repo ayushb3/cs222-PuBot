@@ -1,7 +1,5 @@
-import sys
-import os
-sys.path.append(os.getcwd() + '/src/')
-from title_generator import generate_title
+from src.title_generator import generate_title
+
 
 def test_title_generator():
     text = """Python is a high-level, general-purpose programming language. Its design philosophy emphasizes code readability with the use of significant indentation.
@@ -11,6 +9,3 @@ def test_title_generator():
     have = generate_title(text)
     print(have)
     assert 0 < len(have) < len(text)
-
-if __name__ == '__main__':
-    test_title_generator()
