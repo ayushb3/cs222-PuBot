@@ -9,6 +9,7 @@ numpy = "*"
 torch = "*"
 transformers = "*"
 nltk = "*"
+mock = "*"
 
 [dev-packages]
 pytest = "*"
