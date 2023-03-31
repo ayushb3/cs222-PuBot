@@ -65,3 +65,13 @@ def get_article(title, author, date):
 
     # Return the content of the article 
     return result
+
+def pick_article():
+    conn = sqlite3.connect('articles.db')
+    c = conn.cursor()
+
+    c.execute("SELECT * FROM articles order by random()")
+    result = c.fetchone()
+    
+    return result
+    
