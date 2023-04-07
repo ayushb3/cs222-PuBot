@@ -10,6 +10,7 @@ torch = "*"
 transformers = "*"
 nltk = "*"
 mock = "*"
+schedule = "*"
 
 [dev-packages]
 pytest = "*"
