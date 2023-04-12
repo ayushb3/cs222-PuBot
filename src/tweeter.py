@@ -20,10 +20,13 @@ def tweeter():
     tweets_to_be_put_on_scheduler = database.get_all_new_articles(hasDate=False)
     for t in tweets_to_be_scheduled:
         tweet(api = api(), message=t[1], date=t[2])
-        database.delete_article(t[0])
     schedule.every().day.at("12:00").do(scheduled_tweeter, tweets_to_be_put_on_scheduler)
-    # TO DO: check if parameters are passed as references so that we move onto different tweets
 
+    # Schedule the deletion of tweets that are in the database longer than 2 weeks
+    schedule.every().day.at("12:00").do(database.delete_old_rows)
+
+    # NOTE: check if parameters are passed as references so that we move onto different tweets
+    # Should be fine because argument is a mutable list 
 
     # if we run out of tweets, stop the schedule
     while len(schedule.jobs) != 0:

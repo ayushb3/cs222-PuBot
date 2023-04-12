@@ -1,5 +1,5 @@
 import sqlite3
-
+import datetime
 
 # Function to create the table
 def create_table():
@@ -9,23 +9,44 @@ def create_table():
 
     # Create the articles table if it does not exist
     c.execute('''CREATE TABLE IF NOT EXISTS articles
-                 (article_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, author TEXT, date TEXT, content TEXT, hasTweeted BOOLEAN)''')
+                 (article_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, author TEXT, date_inserted TEXT, date_to_publish TEXT, content TEXT, hasTweeted BOOLEAN)''')
 
     # Commit the changes and close the connection
     conn.commit()
     conn.close()
 
+# Function to remove tweets after a period of time
+delete_interval = datetime.timedelta(weeks=2)
+def delete_old_rows():
+    # Connect to the database
+    conn = sqlite3.connect('articles.db')
+    c = conn.cursor()
 
+    # Get the current date
+    today = datetime.date.today()
+
+    # Calculate the date 
+    delete_date = today - delete_interval
+
+    # Construct the SQL query to delete rows from the articles table where the date is older than delete_date
+    sql_query = "DELETE FROM articles WHERE date_to_publish IS NULL AND date_inserted < ?"
+    sql_query2 = "DELETE FROM articles WHERE date_to_publish IS NOT NULL AND date_to_publish < ?"
+    # Execute the SQL query with the delete_date parameter
+    c.execute(sql_query, (delete_date,))
+    c.execute(sql_query2, (delete_date,))
+    # Commit the changes and close the connection
+    conn.commit()
+    conn.close()
 
 # Function that can be used to store information in the database
-def insert_article(title, author, date, content):
+def insert_article(title, author, date_inserted, date_to_publish, content):
     # Connect to the database
     conn = sqlite3.connect('articles.db')
     c = conn.cursor()
 
     # Insert a new row into the articles table
-    c.execute("INSERT INTO articles (title, author, date, content, hasTweeted) VALUES (?, ?, ?, ?, ?)",
-              (title, author, date, content, False))
+    c.execute("INSERT INTO articles (title, author, date_inserted, date_to_publish, content, hasTweeted) VALUES (?, ?, ?, ?, ?)",
+              (title, author, date_inserted.isoformat(), date_to_publish.isoformat(), content, False))
 
     # Commit the changes and close the connection
     conn.commit()
