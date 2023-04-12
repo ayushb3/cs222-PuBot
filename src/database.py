@@ -9,7 +9,7 @@ def create_table():
 
     # Create the articles table if it does not exist
     c.execute('''CREATE TABLE IF NOT EXISTS articles
-                 (article_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, author TEXT, date_inserted TEXT, date_to_publish TEXT, content TEXT, hasTweeted BOOLEAN)''')
+                 (article_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, author TEXT, date_inserted TEXT, date_to_publish TEXT, content TEXT, hasTweeted BOOLEAN DEFAULT 0)''')
 
     # Commit the changes and close the connection
     conn.commit()
@@ -24,10 +24,8 @@ def delete_old_rows():
 
     # Get the current date
     today = datetime.date.today()
-
     # Calculate the date 
     delete_date = today - delete_interval
-
     # Construct the SQL query to delete rows from the articles table where the date is older than delete_date
     sql_query = "DELETE FROM articles WHERE date_to_publish IS NULL AND date_inserted < ?"
     sql_query2 = "DELETE FROM articles WHERE date_to_publish IS NOT NULL AND date_to_publish < ?"
@@ -45,8 +43,8 @@ def insert_article(title, author, date_inserted, date_to_publish, content):
     c = conn.cursor()
 
     # Insert a new row into the articles table
-    c.execute("INSERT INTO articles (title, author, date_inserted, date_to_publish, content, hasTweeted) VALUES (?, ?, ?, ?, ?)",
-              (title, author, date_inserted.isoformat(), date_to_publish.isoformat(), content, False))
+    c.execute("INSERT INTO articles (title, author, date_inserted, date_to_publish, content, hasTweeted) VALUES (?, ?, ?, ?, ?, ?)",
+              (title, author, date_inserted, date_to_publish, content, False))
 
     # Commit the changes and close the connection
     conn.commit()
@@ -55,39 +53,32 @@ def insert_article(title, author, date_inserted, date_to_publish, content):
 
 
 # Gets all the information stored about an article
-def get_single_article(article_id):
+def get_single_article(title, author):
     # Connect to the database
     conn = sqlite3.connect('articles.db')
     c = conn.cursor()
 
     # Execute a SELECT query to retrieve the content of the article
-    c.execute("SELECT * FROM articles WHERE article_id = ?",
-              (article_id,))
+    c.execute("SELECT * FROM articles WHERE title = ? and author = ?",
+              (title,author))
     result = c.fetchone()
 
     # Close the connection
     conn.close()
 
     # Return the content of the article 
-    return result
+
+    if result is not None:
+        return result
+    return -1
 
 # Function that can be used to acquire content from the 
 # database given certain information about an article
-def get_single_article_content(article_id):
+def get_single_article_content(title, author):
     # Connect to the database
-    conn = sqlite3.connect('articles.db')
-    c = conn.cursor()
-
-    # Execute a SELECT query to retrieve the content of the article
-    c.execute("SELECT content FROM articles WHERE article_id = ?",
-              (article_id,))
-    result = c.fetchone()
-
-    # Close the connection
-    conn.close()
-
+    result = get_single_article(title,author)[-2]
     # Return the content of the article 
-    return result[0]
+    return result
 
 def get_all_new_articles(hasDate: bool):
     # Connect to the database
@@ -117,7 +108,6 @@ def delete_article(article_id):
     # Commit the changes and close the connection
     conn.commit()
     conn.close()
-    return result
 
 def pick_article():
     conn = sqlite3.connect('articles.db')

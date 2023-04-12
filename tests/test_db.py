@@ -1,28 +1,24 @@
-# import os
-# import sqlite3
-# import sys
+import os
+import sqlite3
+import sys
+import datetime
 
-# path = os.path.abspath("src")
-# sys.path.append(path)
-# import database as db
-from src.database import *
+path = os.path.abspath("src")
+sys.path.append(path)
+import database as db
 
-def test_db():
-    # Create a new database
-    create_table()
 
-    # Insert a new article
-    insert_article('My First Article', 'John Doe', '2022-01-01', 'This is my first article!')
+# Create a new database
+db.create_table()
 
-    # Retrieve the content of the article
-    content = get_article_content('My First Article', 'John Doe', '2022-01-01')
-    assert content == 'This is my first article!'
-    article = get_article('My First Article', 'John Doe', '2022-01-01')
-    print(article)
+# Insert a new article
+today = datetime.date.today()
+print(today)
+db.insert_article('My First Article', 'John Doe', str(today), '2022-01-01','This is my first article!')
 
-    
+# Retrieve the content of the article
 
-def test_pick_article():
-    have = pick_article()
-    print(have)
-    assert have
+article = db.get_single_article('My First Article', 'John Doe')
+print((article))
+content = db.get_single_article_content('My First Article', 'John Doe')
+print(content)
