@@ -1,6 +1,6 @@
 from src.summarizer import summarize
 from src.tweeter import api, tweet
-from src.database import insert_article
+from src.database import insert_article, get_single_article
 from datetime import datetime
 import argparse
 
@@ -10,6 +10,10 @@ def pick_and_tweet(options):
     article = {'title': 'Test Article', 'author': 'John Doe',
                'content': 'This is a test article.'}
     tweet(api(), summarize(article['content']))
+
+def tweet_at(options):
+    article = get_single_article(options.id)
+    tweet(api(),summarize(article['content']),options.time)
 
 
 def add_article(options, content):
@@ -27,6 +31,17 @@ if __name__ == '__main__':
     tweet_parser = subparsers.add_parser(
         'tweet', help='Tweet a summary of a randomly selected text in database')
     tweet_parser.set_defaults(func=pick_and_tweet)
+
+    tweet_at_parser = subparsers.add_parser(
+        'tweetat', help='Tweet a specific article at a specific time'
+    )
+    tweet_at_parser.add_argument(
+        '-t', '--time', help='Time to tweet (Y-m-d H:M:S)'
+    )
+    tweet_at_parser.add_argument(
+        '--id', help ='article id'
+    )
+    tweet_at_parser.set_defaults(func = tweet_at)
 
     db_parser = subparsers.add_parser(
         'insert', help='Insert a new article into the database')
