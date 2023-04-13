@@ -2,6 +2,8 @@ import sqlite3
 import datetime
 
 # Function to create the table
+
+
 def create_table():
     # Connect to the database
     conn = sqlite3.connect('articles.db')
@@ -15,8 +17,11 @@ def create_table():
     conn.commit()
     conn.close()
 
+
 # Function to remove tweets after a period of time
 delete_interval = datetime.timedelta(weeks=2)
+
+
 def delete_old_rows():
     # Connect to the database
     conn = sqlite3.connect('articles.db')
@@ -24,7 +29,7 @@ def delete_old_rows():
 
     # Get the current date
     today = datetime.date.today()
-    # Calculate the date 
+    # Calculate the date
     delete_date = today - delete_interval
     # Construct the SQL query to delete rows from the articles table where the date is older than delete_date
     sql_query = "DELETE FROM articles WHERE date_to_publish IS NULL AND date_inserted < ?"
@@ -37,6 +42,8 @@ def delete_old_rows():
     conn.close()
 
 # Function that can be used to store information in the database
+
+
 def insert_article(title, author, date_inserted, date_to_publish, content):
     # Connect to the database
     conn = sqlite3.connect('articles.db')
@@ -51,7 +58,6 @@ def insert_article(title, author, date_inserted, date_to_publish, content):
     conn.close()
 
 
-
 # Gets all the information stored about an article
 def get_single_article(title, author):
     # Connect to the database
@@ -60,25 +66,28 @@ def get_single_article(title, author):
 
     # Execute a SELECT query to retrieve the content of the article
     c.execute("SELECT * FROM articles WHERE title = ? and author = ?",
-              (title,author))
+              (title, author))
     result = c.fetchone()
 
     # Close the connection
     conn.close()
 
-    # Return the content of the article 
+    # Return the content of the article
 
     if result is not None:
         return result
     return -1
 
-# Function that can be used to acquire content from the 
+# Function that can be used to acquire content from the
 # database given certain information about an article
+
+
 def get_single_article_content(title, author):
     # Connect to the database
-    result = get_single_article(title,author)[-2]
-    # Return the content of the article 
+    result = get_single_article(title, author)[-2]
+    # Return the content of the article
     return result
+
 
 def get_all_new_articles(hasDate: bool):
     # Connect to the database
@@ -86,17 +95,18 @@ def get_all_new_articles(hasDate: bool):
     c = conn.cursor()
 
     if hasDate:
-        c.execute("SELECT article_id, content, date FROM articles WHERE date IS NOT NULL AND hasTweeted = FALSE")
+        c.execute(
+            "SELECT article_id, content, date FROM articles WHERE date IS NOT NULL AND hasTweeted = FALSE")
     else:
-        c.execute("SELECT article_id, content FROM articles WHERE date IS NULL AND hasTweeted = FALSE")
+        c.execute(
+            "SELECT article_id, content FROM articles WHERE date IS NULL AND hasTweeted = FALSE")
     results = c.fetchall()
 
     # Close the connection
     conn.close()
 
-    # Return the content of the articles 
+    # Return the content of the articles
     return results
-
 
 
 def delete_article(article_id):
@@ -109,12 +119,15 @@ def delete_article(article_id):
     conn.commit()
     conn.close()
 
+
 def pick_article():
     conn = sqlite3.connect('articles.db')
     c = conn.cursor()
 
     c.execute("SELECT * FROM articles order by random()")
     result = c.fetchone()
-    
+
+    conn.commit()
+    conn.close()
+
     return result
-    
