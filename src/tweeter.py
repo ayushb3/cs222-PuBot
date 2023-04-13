@@ -14,16 +14,22 @@ def api():
 
     return tweepy.API(auth)
 
+
 def tweeter():
     # TO DO: not necessary to have hasDate anymore if we are deleting after tweeting
     tweets_to_be_scheduled = get_all_new_articles(hasDate=True)
     tweets_to_be_put_on_scheduler = get_all_new_articles(hasDate=False)
     for t in tweets_to_be_scheduled:
-        tweet(api = api(), message=t[1], date=t[2])
+        tweet(api=api(), message=t[1], date=t[2])
         delete_article(t[0])
-    schedule.every().day.at("12:00").do(scheduled_tweeter, tweets_to_be_put_on_scheduler)
-    # TO DO: check if parameters are passed as references so that we move onto different tweets
+    schedule.every().day.at("12:00").do(
+        scheduled_tweeter, tweets_to_be_put_on_scheduler)
 
+    # Schedule the deletion of tweets that are in the database longer than 2 weeks
+    schedule.every().day.at("12:00").do(database.delete_old_rows)
+
+    # NOTE: check if parameters are passed as references so that we move onto different tweets
+    # Should be fine because argument is a mutable list
 
     # if we run out of tweets, stop the schedule
     while len(schedule.jobs) != 0:
@@ -32,7 +38,7 @@ def tweeter():
 
 # Function to publish tweet with optional date for scheduling for an article that has not been released yet
 # def tweet(api: tweepy.API, message: str, date: str):
-#     if message: 
+#     if message:
 #         if date:
 #             tweet_time = datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
 #             api.update_status(message, scheduled_at=tweet_time)
@@ -42,11 +48,13 @@ def tweeter():
 #         print('Tweeted unsuccessfully!')
 
 # Function to schedule tweets for a specified frequency given in hours
+
+
 def scheduled_tweeter(tweets):
-        item = tweets.pop(0)  
-        tweet(api = api(), message = item[1], date=None)
-        delete_article(item[0])
-        
+    item = tweets.pop(0)
+    tweet(api=api(), message=item[1], date=None)
+    delete_article(item[0])
+
 
 # Function to delete a user selected tweet out of a range of the numTweets most recent tweets
 # def delete_tweets(api: tweepy.API, numTweets: int):
