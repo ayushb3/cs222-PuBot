@@ -15,16 +15,17 @@ class Summarizer:
             "fabiochiu/t5-small-medium-title-generation")
 
         self.max_input_length = 1000
-        self.summary_text = None
-        self.title = None
+        self.__summary_text = None
+        self.__title = None
+        self.__tweet_content =  None
 
-    def summarize(self,text: str):
+    def __summarize(self,text: str):
         """Summarize text using Hugging Face's transformers library."""
         if len(text) < 1024:
-            self.summary_text = self.small_summarizer(text, max_length=MAX_TWEET_CONTENT_LENGTH, min_length=30, do_sample=False, truncation=True)[0]['summary_text']
-        self.summary_text = self.large_summarizer(text, max_length=MAX_TWEET_CONTENT_LENGTH, min_length=30, do_sample=False, truncation=True)[0]['summary_text']
+            self.__summary_text = self.small_summarizer(text, max_length=MAX_TWEET_CONTENT_LENGTH, min_length=30, do_sample=False, truncation=True)[0]['summary_text']
+        self.__summary_text = self.large_summarizer(text, max_length=MAX_TWEET_CONTENT_LENGTH, min_length=30, do_sample=False, truncation=True)[0]['summary_text']
     
-    def generate_title(self,text: str):
+    def __generate_title(self,text: str):
         nltk.download('punkt', quiet=True)
         inputs = ["summarize: " + text]
         inputs = self.tokenizer(inputs, max_length=self.max_input_length,
@@ -35,7 +36,15 @@ class Summarizer:
             output, skip_special_tokens=True)[0]
         predicted_title = nltk.sent_tokenize(decoded_output.strip())[0]
 
-        self.title = predicted_title
+        self.__title = predicted_title
+    
+    def make_tweet(self,text: str):
+        self.__summarize(text)
+        self.__generate_title(text)
+        self.__tweet_content = f"{self.__title}\n{self.__summary_text}"
+    
+    def get_content(self):
+        return self.__tweet_content
     
 small_summarizer = pipeline(
     "summarization", model="facebook/bart-large-cnn", framework="pt")
