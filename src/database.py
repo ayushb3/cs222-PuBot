@@ -6,6 +6,7 @@ class Database:
     def __init__(self, filepath):
         self.filepath = filepath
         self.db = sqlite3.connect(filepath)
+        self.db.row_factory = sqlite3.Row
         self.db.execute('''CREATE TABLE IF NOT EXISTS articles (
                             author TEXT,
                             title TEXT,
