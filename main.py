@@ -41,8 +41,8 @@ def pick_and_tweet(options):
     if not article:
         print("No articles to tweet.")
         return
-    print(f"Summarizing '{article[1]}' by {article[2]}...")
-    summarizer.make_tweet(article[4])
+    print(f"Summarizing '{article.title}' by {article.author}...")
+    summarizer.make_tweet(article.content)
     print("Tweeting:\n\n" + summarizer.get_content())
     # tweet(api(), tweet_content) Can't tweet yet
 
