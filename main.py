@@ -6,6 +6,7 @@ import argparse
 import subprocess
 import time
 import schedule
+import wikipedia
 from src.summarizer import Summarizer
 # from src.tweeter import Tweeter
 from src.database import Database
@@ -57,6 +58,13 @@ def add_article(options):
     db.insert(options.author, options.title, options.file.read())
 
 
+def add_wikipedia_article(options):
+    db = Database(options.database)
+    wikipedia.set_lang("en")
+    page = wikipedia.page(options.title, preload=True)
+    db.insert("Wikipedia", page.original_title, page.content)
+
+
 if __name__ == '__main__':
     global_parser = argparse.ArgumentParser(
         prog="PuBot", description="Twitter bot to summarize text")
@@ -104,6 +112,13 @@ if __name__ == '__main__':
     # db_parser.add_argument(
     #     metavar="CONTENT", help='Content of a text', dest='operands')
     db_parser.set_defaults(func=add_article)
+
+    wiki_parser = subparsers.add_parser(
+        'insertwiki', help='Insert a new wikipedia article into the database')
+    wiki_parser.add_argument(
+        '-t', '--title', required=True, help='Title of the wikipedia article')
+    wiki_parser.set_defaults(func=add_wikipedia_article)
+
     args = global_parser.parse_args()
 
     if hasattr(args, 'operands') and not isinstance(args.operands, list):

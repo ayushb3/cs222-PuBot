@@ -11,6 +11,7 @@ transformers = "*"
 nltk = "*"
 mock = "*"
 schedule = "*"
+wikipedia = "*"
 
 [dev-packages]
 pytest = "*"
