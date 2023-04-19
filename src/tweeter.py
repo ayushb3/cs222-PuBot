@@ -17,3 +17,6 @@ class Tweeter:
 
     def delete_tweet(self, tweet_id: int):
         self.api.destroy_status(tweet_id)
+
+    def update_tweet(self, tweet_id: int, message: str):
+        self.api.update_status(message, in_reply_to_status_id=tweet_id)

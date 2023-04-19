@@ -53,6 +53,7 @@ def pick_and_tweet(options):
 #     tweet(api(), summarize(article['content']), options.time)
 
 
+
 def add_article(options):
     db = Database(options.database)
     db.insert(options.author, options.title, options.file.read())
@@ -76,6 +77,7 @@ if __name__ == '__main__':
     tweet_parser = subparsers.add_parser(
         'tweet', help='Tweet a summary of a randomly selected text in database')
     tweet_parser.set_defaults(func=pick_and_tweet)
+
 
     scheduler_parser = subparsers.add_parser(
         'scheduler', help='Schedule tweets at a specified interval')
