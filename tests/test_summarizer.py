@@ -1,11 +1,52 @@
-from src.summarizer import summarize
+import pytest
+from src.summarizer import Summarizer
 
 
-def test_summarizer():
-    text = """Python is a high-level, general-purpose programming language. Its design philosophy emphasizes code readability with the use of significant indentation.
-                Python is dynamically typed and garbage-collected. It supports multiple programming paradigms, including structured (particularly procedural), object-oriented and functional programming. It is often described as a "batteries included" language due to its comprehensive standard library.
-                Guido van Rossum began working on Python in the late 1980s as a successor to the ABC programming language and first released it in 1991 as Python 0.9.0. Python 2.0 was released in 2000. Python 3.0, released in 2008, was a major revision not completely backward-compatible with earlier versions. Python 2.7.18, released in 2020, was the last release of Python 2.
-                Python consistently ranks as one of the most popular programming languages."""
-    have = summarize(text)
-    print(have)
-    assert 0 < len(have) < len(text)
+
+
+class TestSummarizer:
+
+    def test_make_tweet(self):
+        summarizer = Summarizer()
+        text = "This is a long text that needs to be summarized into a tweet. It contains many words and sentences that will need to be condensed into a short summary."
+        summarizer.make_tweet(text)
+        tweet_content = summarizer.get_content()
+        assert isinstance(tweet_content, str)
+        assert len(tweet_content) <= 280
+        assert len(tweet_content) > 0
+
+    def test_make_tweet_short_text(self):
+        summarizer = Summarizer()
+        text = "This is a short text."
+        summarizer.make_tweet(text)
+        tweet_content = summarizer.get_content()
+        assert isinstance(tweet_content, str)
+        assert len(tweet_content) <= 280
+        assert len(tweet_content) > 0
+
+    def test_get_content(self):
+        summarizer = Summarizer()
+        text = "This is a long text that needs to be summarized into a tweet. It contains many words and sentences that will need to be condensed into a short summary."
+        summarizer.make_tweet(text)
+        tweet_content = summarizer.get_content()
+        assert isinstance(tweet_content, str)
+        assert len(tweet_content) <= 280
+        assert len(tweet_content) > 0
+
+    def test_summarize(self):
+        summarizer = Summarizer()
+        text = "This is a long text that needs to be summarized into a tweet. It contains many words and sentences that will need to be condensed into a short summary."
+        summarizer._Summarizer__summarize(text)
+        summary_text = summarizer._Summarizer__summary_text
+        assert isinstance(summary_text, str)
+        assert len(summary_text) <= 280
+        assert len(summary_text) > 0
+
+    def test_generate_title(self):
+        summarizer = Summarizer()
+        text = "This is a long text that needs to be summarized into a tweet. It contains many words and sentences that will need to be condensed into a short summary."
+        summarizer._Summarizer__generate_title(text)
+        title = summarizer._Summarizer__title
+        assert isinstance(title, str)
+        assert len(title) <= 100
+        assert len(title) > 0
