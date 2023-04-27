@@ -34,7 +34,7 @@ class Database:
         self.db.execute('''UPDATE articles
                         set lastTweeted = ?
                         WHERE author = ? AND title = ?''',
-                        last_tweeted, author, title)
+                        (last_tweeted, author, title))
         self.db.commit()
 
     def delete(self, author: str, title: str) -> None:
@@ -48,10 +48,11 @@ class Database:
         params = ()
         if last_tweeted is not None:
             query += '''AND lastTweeted < ? '''
-            params += last_tweeted
+            params += (last_tweeted,)
         if author is not None:
             query += '''AND author = ? '''
-            params += author
+            params += (author,)
         query += "ORDER BY random() LIMIT 1"
-        self.db.execute(query, params)
-        return self.db.fetchone()
+        cursor = self.db.cursor()  # create cursor object from connection
+        cursor.execute(query, params)
+        return cursor.fetchone()
