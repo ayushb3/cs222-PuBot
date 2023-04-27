@@ -8,9 +8,9 @@ import time
 import schedule
 import wikipedia
 from src.summarizer import Summarizer
-# from src.tweeter import Tweeter
+from src.tweeter import Tweeter
 from src.database import Database
-# from settings import API_KEY, API_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET
+from settings import API_KEY, API_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET, BEARER_TOKEN
 
 
 def tweet_scheduler(options):
@@ -36,22 +36,25 @@ def tweet_scheduler(options):
 
 def pick_and_tweet(options):
     db = Database(options.database)
-    # tweeter = Tweeter(API_KEY, API_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+    tweeter = Tweeter(BEARER_TOKEN, API_KEY, API_SECRET,
+                      ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
     summarizer = Summarizer()
     article = db.pick()
     if not article:
         print("No articles to tweet.")
         return
-    print(f"Summarizing '{article.title}' by {article.author}...")
-    summarizer.make_tweet(article.content)
-    print("Tweeting:\n\n" + summarizer.get_content())
-    # tweet(api(), tweet_content) Can't tweet yet
+    title, author = article["title"], article["author"]
+    print(f"Summarizing '{title}' by {author}...")
+    summarizer.make_tweet(article["content"])
+    text = summarizer.get_content()
+    print("Tweeting...", text, sep="\n")
+    tweet = tweeter.tweet(text)
+    print(tweet)
 
 
 # def tweet_at(options):
 #     article = get_single_article(options.id)
 #     tweet(api(), summarize(article['content']), options.time)
-
 
 
 def add_article(options):
@@ -64,6 +67,7 @@ def add_wikipedia_article(options):
     wikipedia.set_lang("en")
     page = wikipedia.page(options.title, preload=True)
     db.insert("Wikipedia", page.original_title, page.content)
+    print(f"Added '{page.original_title}' by Wikipedia to database.")
 
 
 if __name__ == '__main__':
@@ -77,7 +81,6 @@ if __name__ == '__main__':
     tweet_parser = subparsers.add_parser(
         'tweet', help='Tweet a summary of a randomly selected text in database')
     tweet_parser.set_defaults(func=pick_and_tweet)
-
 
     scheduler_parser = subparsers.add_parser(
         'scheduler', help='Schedule tweets at a specified interval')

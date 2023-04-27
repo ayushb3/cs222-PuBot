@@ -43,7 +43,7 @@ class Database:
                         (author, title))
         self.db.commit()
 
-    def pick(self, last_tweeted: str = None, author: str = None) -> tuple:
+    def pick(self, last_tweeted: str = None, author: str = None) -> sqlite3.Row:
         query = '''SELECT * FROM articles WHERE 1=1 '''
         params = ()
         if last_tweeted is not None:
@@ -53,6 +53,5 @@ class Database:
             query += '''AND author = ? '''
             params += (author,)
         query += "ORDER BY random() LIMIT 1"
-        cursor = self.db.cursor()  # create cursor object from connection
-        cursor.execute(query, params)
+        cursor = self.db.execute(query, params)
         return cursor.fetchone()
