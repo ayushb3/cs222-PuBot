@@ -12,6 +12,8 @@ nltk = "*"
 mock = "*"
 schedule = "*"
 wikipedia = "*"
+openai = "*"
+python-dotenv = "*"
 
 [dev-packages]
 pytest = "*"
