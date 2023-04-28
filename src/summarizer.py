@@ -8,10 +8,11 @@ class Summarizer:
         self.__summary = None
 
     def __openai_summarize(self,text: str):
-        input_text = f"Please summarize the following text for a tweet:\n\n {text}\n"
+        if len(text) > 2000:
+            text = text[:2000]
+        input_text = f"Please summarize the following text for a tweet and include some hashtags at the end:\n\n {text}\n"
         encoding = tiktoken.encoding_for_model('text-davinci-003')
-        # 4096 - 60 = 4036
-        encoded_text = encoding.encode(input_text)[:4036]
+        encoded_text = encoding.encode(input_text)
         prompt = encoding.decode(encoded_text)
         response = openai.Completion.create(
             engine="text-davinci-003",
@@ -23,6 +24,7 @@ class Summarizer:
             presence_penalty=1
         )
         summary = response.choices[0]["text"]
+        print(summary)
         self.__summary = summary[1:]
     
     def make_tweet(self, text: str):
