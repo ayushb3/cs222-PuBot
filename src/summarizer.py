@@ -1,5 +1,6 @@
 from settings import OPENAI_API_KEY
 import openai
+import tiktoken
 openai.api_key = OPENAI_API_KEY
 
 class Summarizer:
@@ -7,7 +8,11 @@ class Summarizer:
         self.__summary = None
 
     def __openai_summarize(self,text: str):
-        prompt = f"Summarize the following text for a tweet: \n\n{text}\n"
+        input_text = f"Please summarize the following text for a tweet:\n\n {text}\n"
+        encoding = tiktoken.encoding_for_model('text-davinci-003')
+        # 4096 - 60 = 4036
+        encoded_text = encoding.encode(input_text)[:4036]
+        prompt = encoding.decode(encoded_text)
         response = openai.Completion.create(
             engine="text-davinci-003",
             prompt= prompt,
