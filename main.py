@@ -16,7 +16,11 @@ from settings import API_KEY, API_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET, BEA
 def start_flask(options):
     from webserver import app
     app.config['database'] = Database(options.database)
-    app.run()
+    app.config['tweeter'] = Tweeter(BEARER_TOKEN, API_KEY, API_SECRET,
+                                    ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+    app.config['summarizer'] = Summarizer()
+    app.run(debug=True)
+
 
 
 def tweet_scheduler(options):

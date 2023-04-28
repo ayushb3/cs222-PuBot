@@ -20,6 +20,13 @@ class Database:
                             VALUES (?, ?, ?)''', (author, title, content))
         self.db.commit()
 
+    def update_article(self, author: str, title: str, content: str) -> None:
+        self.db.execute('''UPDATE articles
+                            SET content = ?
+                        WHERE author = ? AND title = ?''', (content, author, title))
+        self.db.commit()
+
+
     def get_article(self, author: str, title: str) -> sqlite3.Row:
         cursor = self.db.execute('''SELECT * FROM articles
                                     WHERE author = ? AND title = ?''',
