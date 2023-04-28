@@ -13,6 +13,12 @@ from src.database import Database
 from settings import API_KEY, API_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET, BEARER_TOKEN
 
 
+def start_flask(options):
+    from webserver import app
+    app.config['database'] = Database(options.database)
+    app.run()
+
+
 def tweet_scheduler(options):
     print("Starting scheduler...")
 
@@ -39,7 +45,7 @@ def pick_and_tweet(options):
     tweeter = Tweeter(BEARER_TOKEN, API_KEY, API_SECRET,
                       ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
     summarizer = Summarizer()
-    article = db.pick()
+    article = db.pick_article()
     if not article:
         print("No articles to tweet.")
         return
@@ -59,14 +65,14 @@ def pick_and_tweet(options):
 
 def add_article(options):
     db = Database(options.database)
-    db.insert(options.author, options.title, options.file.read())
+    db.insert_article(options.author, options.title, options.file.read())
 
 
 def add_wikipedia_article(options):
     db = Database(options.database)
     wikipedia.set_lang("en")
     page = wikipedia.page(options.title, preload=True)
-    db.insert("Wikipedia", page.original_title, page.content)
+    db.insert_article("Wikipedia", page.original_title, page.content)
     print(f"Added '{page.original_title}' by Wikipedia to database.")
 
 
@@ -123,6 +129,11 @@ if __name__ == '__main__':
     wiki_parser.add_argument(
         '-t', '--title', required=True, help='Title of the wikipedia article')
     wiki_parser.set_defaults(func=add_wikipedia_article)
+
+    flask_parser = subparsers.add_parser(
+        'flask', help='Run the flask server'
+    )
+    flask_parser.set_defaults(func=start_flask)
 
     args = global_parser.parse_args()
 
