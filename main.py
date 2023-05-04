@@ -3,63 +3,35 @@ CLI Usage:
 """
 
 import argparse
-import subprocess
-import time
-import schedule
 import wikipedia
 from src.summarizer import Summarizer
 from src.tweeter import Tweeter
 from src.database import Database
+from src.commands import _tweet_scheduler, _pick_and_tweet
 from settings import API_KEY, API_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET, BEARER_TOKEN
 
 
 def start_flask(options):
-    from webserver import app
+    from webserver import app, socketio
+    app.config['scheduler'] = None
     app.config['database'] = Database(options.database)
+    app.config['summarizer'] = Summarizer()
     app.config['tweeter'] = Tweeter(BEARER_TOKEN, API_KEY, API_SECRET,
                                     ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
-    app.config['summarizer'] = Summarizer()
-    app.run(debug=True)
-
+    socketio.run(app, debug=True)
 
 
 def tweet_scheduler(options):
-    print("Starting scheduler...")
-
-    def job():
-        subprocess.run(['python', 'main.py', 'tweet'], check=True, shell=True)
-    scheduler = getattr(schedule.every(options.every), options.interval)
-    at_text = ""
-    if options.at:
-        scheduler = scheduler.at(options.at)
-        at_text = f" at {options.at}"
-    scheduler.do(job)
-    print("Scheduler started.\n"
-          f"Tweeting every {options.every} {options.interval}{at_text}...\n"
-          "(Press Ctrl+C to stop)")
-    # Initial run
-    job()
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    scheduler = _tweet_scheduler(options.database,
+                                 Summarizer(), Tweeter(BEARER_TOKEN, API_KEY, API_SECRET,
+                                                       ACCESS_TOKEN, ACCESS_TOKEN_SECRET),
+                                 options.every, options.interval, options.at)
+    scheduler.wait()
 
 
 def pick_and_tweet(options):
-    db = Database(options.database)
-    tweeter = Tweeter(BEARER_TOKEN, API_KEY, API_SECRET,
-                      ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
-    summarizer = Summarizer()
-    article = db.pick_article()
-    if not article:
-        print("No articles to tweet.")
-        return
-    title, author = article["title"], article["author"]
-    print(f"Summarizing '{title}' by {author}...")
-    summarizer.make_tweet(article["content"])
-    text = summarizer.get_content()
-    print("Tweeting...", text, sep="\n")
-    tweet = tweeter.tweet(text)
-    print(tweet)
+    _pick_and_tweet(Database(options.database), Summarizer(), Tweeter(BEARER_TOKEN, API_KEY, API_SECRET,
+                                                                      ACCESS_TOKEN, ACCESS_TOKEN_SECRET))
 
 
 # def tweet_at(options):

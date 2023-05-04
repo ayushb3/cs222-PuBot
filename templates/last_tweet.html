@@ -1,0 +1,19 @@
+<script>
+    $(document).ready(function () {
+        // Connect to the Socket.IO server.
+        // The connection URL has the following format, relative to the current page:
+        //     http[s]://<domain>:<port>[/<namespace>]
+        var socket = io();
+        socket.on("tweet", function (id) {
+            console.log(id);
+            let tweetLink = "https://twitter.com/twitter/statuses/" + id;
+            $("#last-embedded-tweet").html(
+                '<blockquote class="twitter-tweet"><a href="' +
+                    tweetLink +
+                    '"></a></blockquote>'
+            );
+            twttr.widgets.load(document.getElementById("last-embedded-tweet"));
+        });
+    });
+</script>
+<div id="last-embedded-tweet"></div>
