@@ -1,6 +1,12 @@
 {% extends 'base.html' %} {% block content %}
 <div id="scheduler" class="container mt-4">
-    <div class="h1 text-center">Scheduler</div>
+    <div class="h1 text-center">
+        Scheduler {% if scheduler_running %}
+        <div class="spinner-grow text-info" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        {% endif %}
+    </div>
     <div class="container-fluid">{% include 'scheduler.html' %}</div>
 </div>
 <div id="articles" class="container mt-4">

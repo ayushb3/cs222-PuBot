@@ -15,3 +15,8 @@
 .text-blue {
     color: #13294b !important;
 }
+
+.twitter-tweet {
+    margin-right: auto !important;
+    margin-left: auto !important;
+}

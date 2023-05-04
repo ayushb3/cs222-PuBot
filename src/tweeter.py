@@ -7,7 +7,7 @@ class Tweeter:
             bearer_token, api_key, api_secret, access_token, access_token_secret)
 
     def tweet(self, message: str):
-        return self.api.create_tweet(text=message)
+        return self.api.create_tweet(text=message).data
 
     def delete_tweet(self, tweet_id: int):
         self.api.delete_tweet(tweet_id)

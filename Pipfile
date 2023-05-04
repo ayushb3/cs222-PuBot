@@ -18,6 +18,9 @@ tiktoken = "*"
 regex = "*"
 flask = "*"
 flask-socketio = "*"
+simple-websocket = "*"
+spacy = "*"
+spacy-download = "*"
 
 [dev-packages]
 pytest = "*"

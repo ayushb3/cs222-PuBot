@@ -1,44 +1,75 @@
-<form method="POST" action="{{ url_for('update_scheduler') }}">
-    <div class="row">
-        <div class="form-group col">
-            <label for="every">Every:</label>
-            <input
-                type="number"
-                class="form-control"
-                id="every"
-                name="every"
-                required
-            />
-        </div>
-        <div class="form-group col">
-            <label for="interval">Interval:</label>
-            <select class="form-control" id="interval" name="interval" required>
-                <option value="seconds">Seconds</option>
-                <option value="minutes">Minutes</option>
-                <option value="hours">Hours</option>
-                <option value="days">Days</option>
-            </select>
-        </div>
-        <div class="form-group col">
-            <label for="at">At:</label>
-            <input type="time" class="form-control" id="at" name="at" />
+<div class="{% if scheduler_running %}row{% endif %}">
+    <div class="{% if scheduler_running %}col mt-5{% endif %}">
+        <form method="POST" action="{{ url_for('update_scheduler') }}">
+            <div class="row">
+                <div
+                    class="form-group {% if not scheduler_running %}col{% endif %}"
+                >
+                    <label for="every">Every:</label>
+                    <input
+                        type="number"
+                        class="form-control"
+                        id="every"
+                        name="every"
+                        value="{{ scheduler.every }}"
+                        required
+                    />
+                </div>
+                <div
+                    class="form-group {% if not scheduler_running %}col{% endif %}"
+                >
+                    <label for="interval">Interval:</label>
+                    <select
+                        class="form-control"
+                        id="interval"
+                        name="interval"
+                        value="{{ scheduler.interval }}"
+                        required
+                    >
+                        <option value="seconds">Seconds</option>
+                        <option value="minutes">Minutes</option>
+                        <option value="hours">Hours</option>
+                        <option value="days">Days</option>
+                    </select>
+                </div>
+                <div
+                    class="form-group {% if not scheduler_running %}col{% endif %}"
+                >
+                    <label for="at">At:</label>
+                    <input
+                        type="time"
+                        class="form-control"
+                        id="at"
+                        name="at"
+                        value="{{scheduler.at}}"
+                    />
+                </div>
+            </div>
+            <button type="submit" class="btn btn-warning mt-2 float-end">
+                Update
+            </button>
+        </form>
+        <div class="mt-2">
+            <form
+                method="POST"
+                action="{{ url_for('start_scheduler') }}"
+                class="d-inline"
+            >
+                <button type="submit" class="btn btn-primary">Start</button>
+            </form>
+            <form
+                method="POST"
+                action="{{ url_for('stop_scheduler') }}"
+                class="d-inline"
+            >
+                <button type="submit" class="btn btn-danger">Stop</button>
+            </form>
         </div>
     </div>
-    <button type="submit" class="btn btn-warning mt-2 float-end">Update</button>
-</form>
-<div class="mt-2">
-    <form
-        method="POST"
-        action="{{ url_for('start_scheduler') }}"
-        class="d-inline"
-    >
-        <button type="submit" class="btn btn-primary">Start</button>
-    </form>
-    <form
-        method="POST"
-        action="{{ url_for('stop_scheduler') }}"
-        class="d-inline"
-    >
-        <button type="submit" class="btn btn-danger">Stop</button>
-    </form>
+    {% if scheduler_running %}
+    <div class="col">
+        <h3 class="text-center">Last Tweet</h3>
+        {% include 'last_tweet.html' %}
+    </div>
+    {% endif %}
 </div>
