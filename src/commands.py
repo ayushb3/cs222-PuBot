@@ -36,9 +36,12 @@ def _tweet_scheduler(db_path: str, summarizer: Summarizer, tweeter: Tweeter, eve
 
     def job():
         db = Database(db_path)
-        tweet = _pick_and_tweet(db, summarizer, tweeter)
-        if on_tweet:
-            on_tweet(tweet)
+        try:
+            tweet = _pick_and_tweet(db, summarizer, tweeter)
+            if on_tweet:
+                on_tweet(tweet)
+        except Exception:
+            pass
     scheduler = getattr(schedule.every(every), interval)
     at_text = ""
     if at:
