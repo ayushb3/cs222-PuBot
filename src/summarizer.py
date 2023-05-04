@@ -53,7 +53,7 @@ class Summarizer:
             presence_penalty=1
         )
         summary = response.choices[0]["text"]
-        self.__summary = summary[1:]
+        self.__summary = summary
 
     def make_tweet(self, text: str):
         self.__openai_summarize(text)
