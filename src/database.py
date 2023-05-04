@@ -26,7 +26,6 @@ class Database:
                         WHERE author = ? AND title = ?''', (content, author, title))
         self.db.commit()
 
-
     def get_article(self, author: str, title: str) -> sqlite3.Row:
         cursor = self.db.execute('''SELECT * FROM articles
                                     WHERE author = ? AND title = ?''',
@@ -38,7 +37,7 @@ class Database:
         return cursor.fetchall()
 
     def update_last_tweeted_article(self, author: str, title: str, last_tweeted: int = None) -> None:
-        if last_tweeted is None:
+        if last_tweeted is None or last_tweeted == 0:
             last_tweeted = datetime.datetime.now()
         self.db.execute('''UPDATE articles
                         set lastTweeted = ?

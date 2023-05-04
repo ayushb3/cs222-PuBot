@@ -1,45 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Scheduler</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css"
-        integrity="sha512-kdcWcZVKfnyO+b/n0Zd83QlQWolRxv4dDfnPNXyX9FK8glJp55bSzzwZzoG74m+wx4M2P4hYD/szUM1e/wXHyA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
-
-<body>
-    <div class="container">
-        <form method="POST" action="{{ url_for('start_scheduler') }}">
-            <button type="submit" class="btn btn-primary">Start</button>
-        </form>
-        <form method="POST" action="{{ url_for('stop_scheduler') }}">
-            <button type="submit" class="btn btn-danger mt-2">Stop</button>
-        </form>
-        <form method="POST" action="{{ url_for('update_scheduler') }}">
-            <div class="form-group mt-2">
-                <label for="every">Every:</label>
-                <input type="number" class="form-control" id="every" name="every" required>
-            </div>
-            <div class="form-group mt-2">
-                <label for="interval">Interval:</label>
-                <select class="form-control" id="interval" name="interval" required>
-                    <option value="seconds">Seconds</option>
-                    <option value="minutes">Minutes</option>
-                    <option value="hours">Hours</option>
-                    <option value="days">Days</option>
-                </select>
-            </div>
-            <div class="form-group mt-2">
-                <label for="at">At:</label>
-                <input type="time" class="form-control" id="at" name="at" required>
-            </div>
-            <button type="submit" class="btn btn-warning mt-2"
-                onclick="return confirm('Are you sure you want to update the scheduler?')">Update</button>
-        </form>
+<form method="POST" action="{{ url_for('update_scheduler') }}">
+    <div class="row">
+        <div class="form-group col">
+            <label for="every">Every:</label>
+            <input
+                type="number"
+                class="form-control"
+                id="every"
+                name="every"
+                required
+            />
+        </div>
+        <div class="form-group col">
+            <label for="interval">Interval:</label>
+            <select class="form-control" id="interval" name="interval" required>
+                <option value="seconds">Seconds</option>
+                <option value="minutes">Minutes</option>
+                <option value="hours">Hours</option>
+                <option value="days">Days</option>
+            </select>
+        </div>
+        <div class="form-group col">
+            <label for="at">At:</label>
+            <input type="time" class="form-control" id="at" name="at" />
+        </div>
     </div>
-
-</body>
-
-</html>
+    <button type="submit" class="btn btn-warning mt-2 float-end">Update</button>
+</form>
+<div class="mt-2">
+    <form
+        method="POST"
+        action="{{ url_for('start_scheduler') }}"
+        class="d-inline"
+    >
+        <button type="submit" class="btn btn-primary">Start</button>
+    </form>
+    <form
+        method="POST"
+        action="{{ url_for('stop_scheduler') }}"
+        class="d-inline"
+    >
+        <button type="submit" class="btn btn-danger">Stop</button>
+    </form>
+</div>

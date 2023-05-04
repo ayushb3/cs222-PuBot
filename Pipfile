@@ -17,6 +17,7 @@ python-dotenv = "*"
 tiktoken = "*"
 regex = "*"
 flask = "*"
+flask-socketio = "*"
 
 [dev-packages]
 pytest = "*"

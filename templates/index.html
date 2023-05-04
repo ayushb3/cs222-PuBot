@@ -1,56 +1,17 @@
-<!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
-
-<head>
-    <meta charset="UTF-8" />
-    <title>PuBot</title>
-    <link rel="icon" href="{{url_for('static', filename='favicon.ico')}}" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
-        crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}" />
-</head>
-
-<body class="container">
-    <div class="h1 text-orange text-center">PuBot</div>
-    <!-- <nav class="navbar navbar-expand-md bg-orange">
-
-            <div class="container-fluid">
-                <a class="navbar-brand text-blue h1" href="#">PuBot</a>
-            </div>
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a
-                        class="nav-link text-blue"
-                        aria-current="page"
-                        href="#scheduler"
-                        >Scheduler</a
-                    >
-                </li>
-                <li class="nav-item">
-                    <a
-                        class="nav-link text-blue"
-                        aria-current="page"
-                        href="#articles"
-                        >Articles</a
-                    >
-                </li>
-            </ul>
-        </nav> -->
-    <div id="scheduler" class="container">
-        <div class="h1 text-center">Scheduler</div>
-        <div class="container-fluid">{% include 'scheduler.html' %}</div>
+{% extends 'base.html' %} {% block content %}
+<div id="scheduler" class="container mt-4">
+    <div class="h1 text-center">Scheduler</div>
+    <div class="container-fluid">{% include 'scheduler.html' %}</div>
+</div>
+<div id="articles" class="container mt-4">
+    <div class="h1 text-center">Articles</div>
+    <div class="d-flex justify-content-between align-items-center">
+        <a
+            href="{{ url_for('add_article') }}"
+            class="btn btn-primary ms-auto my-3"
+            >Add New Article</a
+        >
     </div>
-    <div id="articles" class="container">
-        <div class="h1 text-center">Articles</div>
-        <div class="d-flex justify-content-between align-items-center">
-            <a href="{{ url_for('add_article') }}" class="btn btn-primary ms-auto my-3">Add New Article</a>
-        </div>
-    </div>
-    <div class="container-fluid">{% include 'articles.html' %}</div>
-</body>
-
-</html>
-
+</div>
+<div class="container-fluid">{% include 'articles.html' %}</div>
+{% endblock %}

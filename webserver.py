@@ -1,6 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 
 app = Flask(__name__, static_url_path='/static')
+
+
+@app.template_global()
+def _len(item):
+    return len(item)
 
 
 @app.route('/')
@@ -67,12 +72,19 @@ def update_article(author, title):
     return render_template('update.html', article=article)
 
 
-
 @app.route('/articles/tweet/<author>/<title>', methods=['POST'])
 def tweet_article(author, title):
-    content = app.config['database'].get_article(author, title)
-    tweet = app.config['summarizer'].make_tweet(content)
-    app.config['tweeter'].tweet(tweet)
-    app.config['database'].update_last_tweeted_article(author, title)
-    return redirect(url_for('index'))
+    article_content = app.config['database'].get_article(author, title)[2]
+    app.config['summarizer'].make_tweet(article_content)
+    tweet = app.config['summarizer'].get_content()[:280]
 
+    app.config['tweeter'].tweet(tweet)
+
+    return render_template('tweet.html', tweet=tweet)
+
+
+@app.route('/articles/tweet', methods=['GET'])
+def tweet_popup():
+    tweet = request.args.get('tweet', '')
+
+    return render_template('tweet.html', tweet=tweet)

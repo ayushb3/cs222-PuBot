@@ -1,37 +1,27 @@
-from src.tweeter import tweet, delete_tweets, scheduled_tweeter
-from collections import namedtuple
-import unittest
-import mock
-import datetime
+from unittest import mock
+from src.tweeter import Tweeter
 
-StatusTest = namedtuple('StatusTest', ['id'])
-ArticleTest = namedtuple('ArticleTest', ['id', 'message', 'date'])
 
-class TestTweeter(unittest.TestCase):
-    @mock.patch('tweepy.API')
-    def test_tweet(self, mock_api):
-        tweet(mock_api, 'This is a test tweet', '2023-03-24 05:05:05')
-        tweet_time = datetime.datetime.strptime(
-            '2023-03-24 05:05:05', '%Y-%m-%d %H:%M:%S')
-        mock_api.update_status.assert_called_with(
-            'This is a test tweet', scheduled_at=tweet_time)
+def test_tweet():
+    with mock.patch('tweepy.Client') as MockClient:
+        mock_client = MockClient.return_value
+        mock_tweet = mock.MagicMock()
+        mock_client.create_tweet.return_value = mock_tweet
 
-        tweet(mock_api, 'This is a test tweet')
-        mock_api.update_status.assert_called_with('This is a test tweet')
+        tweeter = Tweeter('test_bearer_token', 'test_api_key',
+                          'test_api_secret', 'test_access_token', 'test_access_token_secret')
+        tweet_result = tweeter.tweet('test message')
 
-    @mock.patch('tweepy.API')
-    def test_delete_tweets(self, mock_api):
-        test_ids = [StatusTest(1), StatusTest(2), StatusTest(3)]
-        delete_tweets(mock_api, test_ids)
-        mock_api.destroy_status.assert_has_calls(
-            [mock.call(test.id) for test in test_ids], any_order=True)
+        mock_client.create_tweet.assert_called_once_with(text='test message')
+        assert tweet_result == mock_tweet
 
-    @mock.patch('tweepy.API')
-    def test_scheduled_tweeter(self, mock_api):
-        mock_item = ArticleTest(1, 'This is a test tweet', None)
-        mock_tweets = [mock_item]
 
-        scheduled_tweeter(mock_tweets)
+def test_delete_tweet():
+    with mock.patch('tweepy.Client') as MockClient:
+        mock_client = MockClient.return_value
 
-        mock_api.update_status.assert_called_with('This is a test tweet')
-        mock_api.destroy_status.assert_called_with(1)
+        tweeter = Tweeter('test_bearer_token', 'test_api_key',
+                          'test_api_secret', 'test_access_token', 'test_access_token_secret')
+        tweeter.delete_tweet(12345)
+
+        mock_client.delete_tweet.assert_called_once_with(12345)
