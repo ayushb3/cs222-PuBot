@@ -21,6 +21,7 @@ This is a project by Team 60 for CS 222 which in a very basic description is a T
 
 We divided into two subteams while working on this project.
 **Milind and Ayush**: Worked on frontend using Flask, database system using SQLite, and tweeting functionality using Tweepy and the Twitter API.
+
 **Javier and Michal**: Worked on CLI Input and Arg Parser to run the app with specified arguments, scheduler to publish tweets at a determined frequency, and the summarizer to condense large articles into bite-size tweets using the OpenAI model.
 
 ## Installation
